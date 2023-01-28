@@ -1,0 +1,28 @@
+version: '3.7'
+services:
+  api:
+    build: .
+    ports:
+    - "8080:8080"
+    volumes:
+    - .:/code
+    - logvolume01:/var/log
+    container_name: pantry
+    environment:
+      - DEPLOYMENT_ENV=local
+  postgres:
+    image: postgres:latest
+    restart: always
+    ports:
+    - "6432:5432"
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    logging:
+      options:
+        max-size: 10m
+        max-file: "3"
+    volumes:
+      - ./postgres-data:/var/lib/postgresql/data
+volumes:
+  logvolume01: {}
