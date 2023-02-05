@@ -1,6 +1,6 @@
 import logging
 from flask import Flask, request, redirect, url_for, jsonify, Blueprint
-from models.models import create_object, Inventory, Product
+from models.models import Inventory, Product
 
 inventory = Blueprint('inventory', __name__)
 
@@ -75,6 +75,6 @@ def create_inventory():
         upc=data["upc"],
         qty_percentage_remaining=data["qty_percentage_remaining"],
     )
-    create_object(inventory)
+    inventory.save()
 
     return jsonify(inventory.to_dict()) , 201

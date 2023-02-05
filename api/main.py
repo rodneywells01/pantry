@@ -12,6 +12,8 @@ from models.models import db
 from routes import healthcheck, inventory, product
 
 
+logging.basicConfig(level=logging.DEBUG)
+
 def register_blueprints(app):
     app.register_blueprint(healthcheck)
     app.register_blueprint(inventory)

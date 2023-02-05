@@ -1,10 +1,13 @@
 import logging
 from flask import Flask, request, redirect, url_for, jsonify, Blueprint
-from models.models import create_object, Product
+from models.models import Product
 import requests
 
 UPC_API_URL = "https://api.upcitemdb.com/prod/trial/lookup?upc="
 product = Blueprint('product', __name__)
+
+
+logger = logging.getLogger()
 
 @product.route("/product", methods=["GET"])
 def get_products():
@@ -30,12 +33,12 @@ def get_product_by_id(item_id):
     # Check if it's in our database.
     item = Product.query.filter_by(upc=item_id).first()
     if not item:
-        logging.info("Searching for item in the UPC database")
+        logger.info("Searching for item in the UPC database")
 
         # Let's attempt to fetch it from the UPC API
         response = requests.get(f"{UPC_API_URL}{item_id}").json()
-        print(response)
-        if response.get("CODE") == "INVALID_UPC":
+        logger.info(response)
+        if response.get("code") == "INVALID_UPC":
             return jsonify({"Error": "Invalide upc provided"}), 400
 
         if response["total"] != 1:
@@ -43,7 +46,7 @@ def get_product_by_id(item_id):
                 f"We found multiple entries for {item_id} in following json {response}"
             )
         if response["items"][0]["upc"] != item_id:
-            logging.info(f"Could not find item {item_id}")
+            logger.info(f"Could not find item {item_id}")
             return {"count": 0, "items": list()}
 
         # We found our item. Save to DB.
@@ -62,10 +65,10 @@ def get_product_by_id(item_id):
             category=product["category"],
             image_url=image_url,
         )
-        create_object(new_product)
+        new_product.save()
         return {"count": 1,"items": [new_product.to_dict()]}
 
-    logging.info("We had this stored!")
+    logger.info("We had this stored!")
     return {"count": 1,"items": [item.to_dict()]}
 
 

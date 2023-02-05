@@ -78,7 +78,7 @@ class InventoryCategoryView extends React.Component {
       inventory: []
     }
 
-    // Get the inventory list for a user! 
+    // Get the inventory list for a user!
     fetch('/inventory').then(res => res.json()).then(data => {
       console.log("Collecting Inventory of Products!")
       console.log(data);
@@ -132,7 +132,7 @@ class ProductList extends React.Component {
       inventory: []
     }
 
-    // Get the product list! 
+    // Get the product list!
     console.log("Sending an API call to get the inventory.")
     fetch('/product').then(res => res.json()).then(data => {
       console.log("Collecting Inventory of Products!")
@@ -165,9 +165,9 @@ class InventoryList extends React.Component {
       inventory: []
     }
 
-    // Get the inventory list! 
+    // Get the inventory list!
     console.log("Sending an API call to get the inventory.")
-    fetch('/inventory?populate_details=true').then(res => console.log(res)); 
+    fetch('/inventory?populate_details=true').then(res => console.log(res));
     fetch('/inventory').then(res => res.json()).then(data => {
       console.log("Collecting Inventory!")
       console.log(data);
@@ -218,9 +218,9 @@ class MyApp extends React.Component {
             <h3>Hello, Rodney!</h3>
           </div>
         </div>
-        
+
         <InventoryList/>
-        {/*<ProductList />*/}
+        <ProductList/>
       </div>
     );
 

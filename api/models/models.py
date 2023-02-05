@@ -2,7 +2,16 @@ from flask_sqlalchemy import SQLAlchemy
 
 db = SQLAlchemy()
 
-class Product(db.Model):
+
+class BaseModel(db.Model):
+    __abstract__ = True
+
+    def save(self):
+        db.session.add(self)
+        db.session.commit()
+
+
+class Product(BaseModel):
     __tablename__ = "product_info"
 
     id = db.Column(db.Integer, primary_key=True)
@@ -47,7 +56,7 @@ class Product(db.Model):
         }
 
 
-class Inventory(db.Model):
+class Inventory(BaseModel):
     __tablename__ = "inventory"
 
     id = db.Column(db.Integer, primary_key=True)
@@ -74,7 +83,7 @@ class Inventory(db.Model):
         }
 
 
-class User(db.Model):
+class User(BaseModel):
     __tablename__ = "users"
 
     id = db.Column(db.Integer, primary_key=True)
@@ -92,9 +101,3 @@ class User(db.Model):
 
     def __repr__(self):
         return f"<User {self.full_name} />"
-
-
-
-def create_object(model):
-    db.session.add(model)
-    db.session.commit()

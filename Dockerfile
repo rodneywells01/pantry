@@ -12,8 +12,7 @@ COPY scripts /app/scripts
 COPY .flaskenv /app
 
 EXPOSE 5000
-
-RUN ls
+EXPOSE 8080
 
 
 ENV FLASK_APP=api/main
