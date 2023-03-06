@@ -1,4 +1,5 @@
 import logging
+import os
 from math import prod
 
 # logging.basicConfig(level=logging.development)
@@ -23,7 +24,7 @@ def setup():
     app = Flask(__name__)
 
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
-    app.config["MONGO_URI"] = f"mongodb+srv://rodneywells01:{os.getEnv('MONGO_DB_PASS')}@pantry-cluster.63imwsx.mongodb.net/?retryWrites=true&w=majority"
+    app.config["MONGO_URI"] = f"mongodb+srv://rodneywells01:{os.getenv('MONGO_DB_PASS')}@pantry-cluster.63imwsx.mongodb.net/?retryWrites=true&w=majority"
 
     app = register_blueprints(app)
 

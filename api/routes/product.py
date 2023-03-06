@@ -13,9 +13,6 @@ logger = logging.getLogger()
 def get_products():
     # List all Products
     products = Product.getAll()
-    print("Heres the products")
-    logger.info("Heres the products")
-    logger.info(list(products))
     return {
         "count": len(products),
         "inventory": [product.to_dict() for product in products],

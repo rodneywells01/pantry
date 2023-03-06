@@ -47,7 +47,7 @@ class Product(BaseModel):
         db.products.insert_one(self.to_dict())
 
     def __repr__(self):
-        return f"<Inventory {self.item_name} />"
+        return f"<Inventory {self.title} />"
 
     def get_precise_category(self):
         return self.category.split(">")[-1].strip()
@@ -69,15 +69,20 @@ class Product(BaseModel):
 class Inventory(BaseModel):
     __tablename__ = "inventory"
 
-    def __init__(self, user_id, upc, qty_percentage_remaining):
+    def __init__(self, *, dynamo_item, user_id=None, upc=None, qty_percentage_remaining=None):
         self.id = None
-        self.user_id = user_id
-        self.upc = upc
-        self.qty_percentage_remaining = qty_percentage_remaining
+        self.user_id = user_id or dynamo_item["user_id"]
+        self.upc = upc or dynamo_item["upc"]
+        self.qty_percentage_remaining = qty_percentage_remaining or dynamo_item["qty_percentage_remaining"]
+
+    def getAll():
+        db = get_db()
+        results = list(db.inventories.find())
+        return [Inventory(dynamo_item=result) for result in results]
 
     def save(self):
         db = get_db()
-        db.Inventory.insert_one(self.to_dict())
+        db.inventories.insert_one(self.to_dict())
 
     def __repr__(self):
         return f"<Inventory {self.upc} />"
