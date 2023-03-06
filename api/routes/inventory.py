@@ -27,12 +27,6 @@ def get_inventory():
             .all()
         )
 
-        # .add_columns(ProductModel)
-        # .add_columns(users.userId, users.name, users.email, friends.userId, friendId)\
-        # .filter(users.id == friendships.friend_id)\
-        # .filter(friendships.user_id == userID)\
-        # .paginate(page, 1, False)
-
         items = detailed_items_in_inventory
         for item in detailed_items_in_inventory:
             logging.info(item)

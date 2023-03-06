@@ -1,40 +1,50 @@
-from flask_sqlalchemy import SQLAlchemy
+# from flask_pymongo import PyMongo
+from pymongo import MongoClient
+from flask import current_app, g
 
-db = SQLAlchemy()
+def get_db():
+    """
+    Configuration method to return db instance
+    """
+    db = getattr(g, "_database", None)
 
+    if db is None:
+        client = MongoClient(current_app.config["MONGO_URI"])
+        pantry_db = client.get_database("pantry")
+        db = pantry_db
+        g._database = db
 
-class BaseModel(db.Model):
+    return db
+
+class BaseModel():
     __abstract__ = True
 
     def save(self):
-        db.session.add(self)
-        db.session.commit()
+        pass
 
 
 class Product(BaseModel):
     __tablename__ = "product_info"
 
-    id = db.Column(db.Integer, primary_key=True)
-    title = db.Column(db.String())
-    description = db.Column(db.String())
-    ean = db.Column(db.String())
-    upc = db.Column(db.String())
-    brand = db.Column(db.String())
-    model = db.Column(db.String())
-    category = db.Column(db.String())
-    image_url = db.Column(db.String())
+    def __init__(self, *, dynamo_item, title=None, description=None, ean=None, upc=None, brand=None, model=None, category=None, image_url=None):
+        self.title = title or dynamo_item["title"]
+        self.description = description or dynamo_item["description"]
+        self.ean = ean or dynamo_item["ean"]
+        self.upc = upc or dynamo_item["upc"]
+        self.brand = brand or dynamo_item["brand"]
+        self.model = model or dynamo_item["model"]
+        self.category = category or dynamo_item["category"]
+        self.image_url = image_url or dynamo_item["image_url"]
+        self.category = category or dynamo_item["category"]
 
-    def __init__(self, title, description, ean, upc, brand, model, category, image_url):
-        self.title = title
-        self.description = description
-        self.ean = ean
-        self.upc = upc
-        self.brand = brand
-        self.model = model
-        self.category = category
-        self.image_url = image_url
+    def getAll():
+        db = get_db()
+        results = list(db.products.find())
+        return [Product(dynamo_item=result) for result in results]
 
-        self.category = self.get_precise_category()  # TODO reconsider how this is done
+    def save(self):
+        db = get_db()
+        db.products.insert_one(self.to_dict())
 
     def __repr__(self):
         return f"<Inventory {self.item_name} />"
@@ -44,7 +54,6 @@ class Product(BaseModel):
 
     def to_dict(self):
         return {
-            "id": self.id,
             "title": self.title,
             "description": self.description,
             "ean": self.ean,
@@ -53,23 +62,22 @@ class Product(BaseModel):
             "model": self.model,
             "category": self.category,
             "image_url": self.image_url,
+            "category": self.category,
         }
 
 
 class Inventory(BaseModel):
     __tablename__ = "inventory"
 
-    id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.String())
-    upc = db.Column(db.String())
-    qty_percentage_remaining = db.Column(db.Float())
-
-    # children = relationship("Child")
-
     def __init__(self, user_id, upc, qty_percentage_remaining):
+        self.id = None
         self.user_id = user_id
         self.upc = upc
         self.qty_percentage_remaining = qty_percentage_remaining
+
+    def save(self):
+        db = get_db()
+        db.Inventory.insert_one(self.to_dict())
 
     def __repr__(self):
         return f"<Inventory {self.upc} />"
@@ -86,18 +94,16 @@ class Inventory(BaseModel):
 class User(BaseModel):
     __tablename__ = "users"
 
-    id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.String())
-    email = db.Column(db.String())
-    first_name = db.Column(db.String())
-    last_name = db.Column(db.Float())
-
     def __init__(self, user_id, email, first_name, last_name):
         self.user_id = user_id
         self.email = email
         self.first_name = first_name
         self.last_name = last_name
         self.full_name = first_name + " " + last_name
+
+    def save(self):
+        db = get_db()
+        db.User.insert_one(self.to_dict())
 
     def __repr__(self):
         return f"<User {self.full_name} />"

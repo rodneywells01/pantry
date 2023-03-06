@@ -12,7 +12,10 @@ logger = logging.getLogger()
 @product.route("/product", methods=["GET"])
 def get_products():
     # List all Products
-    products = Product.query.all()
+    products = Product.getAll()
+    print("Heres the products")
+    logger.info("Heres the products")
+    logger.info(list(products))
     return {
         "count": len(products),
         "inventory": [product.to_dict() for product in products],
@@ -31,7 +34,8 @@ def get_product_by_id(item_id):
         return jsonify({"error": "item is not valid UPC"}), 400
 
     # Check if it's in our database.
-    item = Product.query.filter_by(upc=item_id).first()
+    # item = Product.query.filter_by(upc=item_id).first()
+    item = None # TODO - Cleaner copying functionality
     if not item:
         logger.info("Searching for item in the UPC database")
 

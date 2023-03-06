@@ -4,10 +4,8 @@ from math import prod
 # logging.basicConfig(level=logging.development)
 
 from flask import Flask
-from flask_sqlalchemy import SQLAlchemy
-from flask_migrate import Migrate
 
-from models.models import db
+# from flask_migrate import Migrate
 
 from routes import healthcheck, inventory, product
 
@@ -23,12 +21,10 @@ def register_blueprints(app):
 
 def setup():
     app = Flask(__name__)
-    app.config[
-        "SQLALCHEMY_DATABASE_URI"
-    ] = "postgresql://postgres:postgres@postgres:5432/pantry"  # TODO - do not store here
+
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
-    db.init_app(app)
-    migrate = Migrate(app, db)
+    app.config["MONGO_URI"] = "mongodb+srv://rodneywells01:WUMNVl6L8Xm3MNPM@pantry-cluster.63imwsx.mongodb.net/?retryWrites=true&w=majority"
+
     app = register_blueprints(app)
 
     return app

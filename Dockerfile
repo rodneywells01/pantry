@@ -1,10 +1,15 @@
-FROM python:3.9
+FROM python:3.11.2-alpine3.17
 
 WORKDIR /app
 
 # Dependencies
 COPY requirements.txt /app
-RUN pip install -r requirements.txt
+
+RUN pip3 install --upgrade pip
+RUN pip3 install --upgrade setuptools wheel
+
+
+RUN pip3 install -r requirements.txt
 
 # Copy Structure
 COPY api /app/api
