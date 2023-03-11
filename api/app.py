@@ -1,13 +1,7 @@
 import logging
 import os
-from math import prod
-
-# logging.basicConfig(level=logging.development)
 
 from flask import Flask
-
-# from flask_migrate import Migrate
-
 from routes import healthcheck, inventory, product
 
 
